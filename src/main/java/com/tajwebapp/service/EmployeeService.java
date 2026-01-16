@@ -29,12 +29,29 @@ public class EmployeeService {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<Employee> updateEmployee() {
-        return null;
+    public ResponseEntity<Employee> updateEmployee(Employee employee) {
+        try {
+            return new ResponseEntity<>(
+                    repo.save(employee),
+                    HttpStatus.CREATED
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<Employee> deleteEmployee(int id) {
-        return null;
+    public ResponseEntity<String> deleteEmployee(int id) {
+        try{
+            repo.remove(id);
+            return new ResponseEntity<>(
+                    "Employee Deleted",
+                    HttpStatus.OK
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<List<Employee>> getAllEmployees() {

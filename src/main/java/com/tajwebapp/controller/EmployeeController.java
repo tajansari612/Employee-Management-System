@@ -42,11 +42,11 @@ public class EmployeeController {
 
     @PutMapping("/update")
     public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee){
-        return employeeService.updateEmployee();
+        return employeeService.updateEmployee(employee);
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<Employee> deleteEmployee(@PathVariable int id){
+    public ResponseEntity<String> deleteEmployee(@PathVariable("id") int id){
         return employeeService.deleteEmployee(id);
     }
 }
