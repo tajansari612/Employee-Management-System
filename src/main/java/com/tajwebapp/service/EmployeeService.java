@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -36,10 +38,26 @@ public class EmployeeService {
     }
 
     public ResponseEntity<List<Employee>> getAllEmployees() {
-        return null;
+        List<Employee> employees = new ArrayList<>();
+        try {
+            employees = repo.findAll();
+            return new ResponseEntity<>(employees, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<Employee> getEmployeeById(int id) {
-        return null;
+        try {
+            Optional<Employee> employee = repo.findById(id);
+            if(employee.isPresent()){
+                return new ResponseEntity<>(employee.get(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

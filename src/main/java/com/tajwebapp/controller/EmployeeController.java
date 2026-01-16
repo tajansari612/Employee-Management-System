@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -30,7 +31,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable int id){
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable("id") int id){
         return employeeService.getEmployeeById(id);
     }
 
