@@ -23,13 +23,11 @@ public class EmployeeRepo {
             .buildSessionFactory();
     Session session = sf.openSession();
 
-
-
     public Employee save(Employee employee) {
         Transaction transaction = session.beginTransaction();
-        session.persist(employee);
+        session.merge(employee);
         transaction.commit();
-        return employee;
+        return session.find(Employee.class, employee.getId());
     };
 
     public List<Employee> findAll() {
@@ -41,20 +39,10 @@ public class EmployeeRepo {
         return Optional.ofNullable(session.find(Employee.class, id));
     }
 
-
-//    Laptop laptop = session.find(Laptop.class, 1);
-//        System.out.println(laptop);
-//
-//    Laptop laptop1 = session.find(Laptop.class, 1);
-//        System.out.println(laptop1);
-//
-//        session.close();
-
-    // new session
-    // without L2 cache it will fire a query to db
-//    Session session1 = sf.openSession();
-//    Laptop laptop2 = session1.find(Laptop.class, 1);
-//        System.out.println(laptop2);
-//
-//        session1.close();
+    public void remove(int id) {
+        Transaction transaction = session.beginTransaction();
+        Employee employee = session.find(Employee.class, id);
+        session.remove(employee);
+        transaction.commit();
+    }
 }
