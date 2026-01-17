@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity
@@ -15,5 +16,6 @@ public class Employee {
     private String firstName;
     private String lastName;
     private String email;
-    private String department;
+    @ManyToOne
+    private Department department;
 }
