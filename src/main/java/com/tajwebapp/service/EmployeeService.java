@@ -43,11 +43,19 @@ public class EmployeeService {
 
     public ResponseEntity<String> deleteEmployee(int id) {
         try{
-            repo.remove(id);
-            return new ResponseEntity<>(
-                    "Employee Deleted",
-                    HttpStatus.OK
-            );
+            Optional<Employee> employee = repo.findById(id);
+            if(employee.isPresent()){
+                repo.remove(id);
+                return new ResponseEntity<>(
+                        "Employee Deleted",
+                        HttpStatus.OK
+                );
+            }else{
+                return new ResponseEntity<>(
+                        "Invalid id",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

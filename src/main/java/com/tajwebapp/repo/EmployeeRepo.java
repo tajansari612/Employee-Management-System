@@ -8,8 +8,6 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
-
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
