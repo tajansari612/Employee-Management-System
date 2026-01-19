@@ -21,11 +21,11 @@ public class EmployeeRepo {
             .buildSessionFactory();
     Session session = sf.openSession();
 
-    public Employee save(Employee employee) {
+    public Optional<Employee> save(Employee employee) {
         Transaction transaction = session.beginTransaction();
-        session.merge(employee);
+        Optional<Employee> employeeFromDB = Optional.ofNullable(session.merge(employee));
         transaction.commit();
-        return session.find(Employee.class, employee.getId());
+        return employeeFromDB;
     };
 
     public List<Employee> findAll() {
