@@ -19,8 +19,9 @@ public class EmployeeService {
 
     public ResponseEntity<Employee> addEmployee(Employee employee) {
         try {
+            Optional<Employee> employeeFromDB = repo.save(employee);
             return new ResponseEntity<>(
-                    repo.save(employee),
+                    employeeFromDB.get(),
                     HttpStatus.CREATED
             );
         } catch (Exception e) {
@@ -31,8 +32,9 @@ public class EmployeeService {
 
     public ResponseEntity<Employee> updateEmployee(Employee employee) {
         try {
+            Optional<Employee> updatedEmployee = repo.save(employee);
             return new ResponseEntity<>(
-                    repo.save(employee),
+                    updatedEmployee.get(),
                     HttpStatus.CREATED
             );
         } catch (Exception e) {

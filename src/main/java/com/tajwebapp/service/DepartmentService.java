@@ -1,0 +1,77 @@
+package com.tajwebapp.service;
+
+import com.tajwebapp.model.Department;
+import com.tajwebapp.repo.DepartmentRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class DepartmentService {
+    @Autowired
+    DepartmentRepo repo;
+
+    public ResponseEntity<List<Department>> getAllDepartments() {
+        try{
+            List<Department> departments = repo.findAll();
+            return new ResponseEntity<>(departments, HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public ResponseEntity<Department> getDepartmentById(int id) {
+        try{
+            Optional<Department> department = repo.findById(id);
+            if(department.isPresent()){
+                return new ResponseEntity<>(department.get(), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public ResponseEntity<Department> addDepartment(Department department) {
+        try{
+            Optional<Department> departmentFromDB = repo.save(department);
+            System.out.println(departmentFromDB);
+            return new ResponseEntity<>(departmentFromDB.get(), HttpStatus.CREATED);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public ResponseEntity<Department> updateDepartment(Department department) {
+        try{
+            Optional<Department> updatedDepartment = repo.save(department);
+            return new ResponseEntity<>(updatedDepartment.get(), HttpStatus.CREATED);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public ResponseEntity<String> deleteDepartment(int id) {
+        try{
+            Optional<Department> department = repo.findById(id);
+            if(department.isPresent()){
+                repo.remove(id);
+                return new ResponseEntity<>("Department deleted", HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Invalid department id", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
