@@ -1,10 +1,10 @@
-# Employee-Management-System
+# Employee-Management-System V1.1.1
 
 Simple CRUD web application to manage employees.
 No frontend is implemented use postman or any other tool for testing.
 
 ## Summary
-Employee-Management-System is a Java web application that provides RESTful endpoints to create, read, update and delete employee records. Intended for learning and small internal use.
+Employee-Management-System is a Java web application that provides RESTful endpoints to create, read, update and delete employee as well as department records. Intended for learning and small internal use.
 
 ## Tech stack
 - Java (JDK 17+)
@@ -29,11 +29,19 @@ Employee-Management-System is a Java web application that provides RESTful endpo
 - `name` (String)
 
 ## API
+1. Employee Service
 - `GET /employee/getAll` — list all employees  
 - `GET /employee/get/{id}` — get employee by id  
 - `POST /employee/add` — create employee (JSON body)  
 - `PUT /employee/update` — update employee (JSON body)  
 - `DELETE /employee/delete/{id}` — delete employee
+
+2. Department Service
+- `GET /department/getAll` — list all departments  
+- `GET /department/get/{id}` — get department by id  
+- `POST /department/add` — create department (JSON body)  
+- `PUT /department/update` — update department (JSON body)  
+- `DELETE /department/delete/{id}` — delete department
 
 Request/response content-type: `application/json`
 
