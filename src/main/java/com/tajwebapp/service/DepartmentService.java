@@ -1,5 +1,6 @@
 package com.tajwebapp.service;
 
+import com.tajwebapp.exception.DepartmentNotFoundException;
 import com.tajwebapp.model.Department;
 import com.tajwebapp.repo.DepartmentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +32,16 @@ public class DepartmentService {
             if(department.isPresent()){
                 return new ResponseEntity<>(department.get(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                throw new DepartmentNotFoundException(id);
             }
-        }catch (Exception e) {
-            e.printStackTrace();
+        }catch (DepartmentNotFoundException e) {
+            System.out.println("error: "+ e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            System.out.println("error: Unknow Exception :" + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     public ResponseEntity<Department> addDepartment(Department department) {
@@ -67,11 +72,14 @@ public class DepartmentService {
                 repo.remove(id);
                 return new ResponseEntity<>("Department deleted", HttpStatus.OK);
             }else{
-                return new ResponseEntity<>("Invalid department id", HttpStatus.BAD_REQUEST);
+                throw new DepartmentNotFoundException(id);
             }
+        } catch (DepartmentNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("error: Unknown Exception" + e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

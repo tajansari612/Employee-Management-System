@@ -1,5 +1,6 @@
 package com.tajwebapp.service;
 
+import com.tajwebapp.exception.EmployeeNotFoundException;
 import com.tajwebapp.model.Employee;
 import com.tajwebapp.repo.EmployeeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +54,15 @@ public class EmployeeService {
                         HttpStatus.OK
                 );
             }else{
-                return new ResponseEntity<>(
-                        "Invalid id",
-                        HttpStatus.BAD_REQUEST
-                );
+                throw new EmployeeNotFoundException(id);
             }
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("error: Unknown Exception");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<List<Employee>> getAllEmployees() {
@@ -80,11 +81,15 @@ public class EmployeeService {
             Optional<Employee> employee = repo.findById(id);
             if(employee.isPresent()){
                 return new ResponseEntity<>(employee.get(), HttpStatus.OK);
+            }else{
+                throw new EmployeeNotFoundException(id);
             }
+        } catch (EmployeeNotFoundException e) {
+            System.out.println("error: "+ e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("error: Unknow Exception");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
