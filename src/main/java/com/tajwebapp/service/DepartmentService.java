@@ -21,9 +21,9 @@ public class DepartmentService {
             List<Department> departments = repo.findAll();
             return new ResponseEntity<>(departments, HttpStatus.OK);
         }catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("error: Unknown Exception");
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<Department> getDepartmentById(int id) {
@@ -49,9 +49,9 @@ public class DepartmentService {
             System.out.println(departmentFromDB);
             return new ResponseEntity<>(departmentFromDB.get(), HttpStatus.CREATED);
         }catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("error: Unknown Exception");
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<Department> updateDepartment(Department department) {
@@ -59,9 +59,9 @@ public class DepartmentService {
             Optional<Department> updatedDepartment = repo.save(department);
             return new ResponseEntity<>(updatedDepartment.get(), HttpStatus.CREATED);
         }catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("error: Unknown Exception");
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<String> deleteDepartment(int id) {
