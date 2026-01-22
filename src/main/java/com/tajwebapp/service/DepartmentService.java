@@ -34,14 +34,13 @@ public class DepartmentService {
             }else{
                 throw new DepartmentNotFoundException(id);
             }
-        }catch (DepartmentNotFoundException e) {
-            System.out.println("error: "+ e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (DepartmentNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
         } catch (Exception e) {
             System.out.println("error: Unknow Exception :" + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
-
     }
 
     public ResponseEntity<Department> addDepartment(Department department) {
@@ -76,10 +75,10 @@ public class DepartmentService {
             }
         } catch (DepartmentNotFoundException ex) {
             System.out.println("error: "+ ex.getMessage());
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+            throw ex;
         } catch (Exception e) {
             System.out.println("error: Unknown Exception" + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 }

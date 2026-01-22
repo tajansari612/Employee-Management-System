@@ -58,10 +58,10 @@ public class EmployeeService {
             }
         } catch (EmployeeNotFoundException ex) {
             System.out.println("error: "+ ex.getMessage());
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+            throw ex;
         } catch (Exception e) {
             System.out.println("error: Unknown Exception");
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 
@@ -84,12 +84,12 @@ public class EmployeeService {
             }else{
                 throw new EmployeeNotFoundException(id);
             }
-        } catch (EmployeeNotFoundException e) {
-            System.out.println("error: "+ e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
         } catch (Exception e) {
             System.out.println("error: Unknow Exception");
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 }
