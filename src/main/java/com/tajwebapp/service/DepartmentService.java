@@ -4,8 +4,6 @@ import com.tajwebapp.exception.DepartmentNotFoundException;
 import com.tajwebapp.model.Department;
 import com.tajwebapp.repo.DepartmentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,21 +14,20 @@ public class DepartmentService {
     @Autowired
     DepartmentRepo repo;
 
-    public ResponseEntity<List<Department>> getAllDepartments() {
+    public List<Department> getAllDepartments() {
         try{
-            List<Department> departments = repo.findAll();
-            return new ResponseEntity<>(departments, HttpStatus.OK);
+            return repo.findAll();
         }catch (Exception e) {
             System.out.println("error: Unknown Exception");
             throw e;
         }
     }
 
-    public ResponseEntity<Department> getDepartmentById(int id) {
+    public Department getDepartmentById(int id) {
         try{
             Optional<Department> department = repo.findById(id);
             if(department.isPresent()){
-                return new ResponseEntity<>(department.get(), HttpStatus.OK);
+                return department.get();
             }else{
                 throw new DepartmentNotFoundException(id);
             }
@@ -43,33 +40,33 @@ public class DepartmentService {
         }
     }
 
-    public ResponseEntity<Department> addDepartment(Department department) {
+    public Department addDepartment(Department department) {
         try{
             Optional<Department> departmentFromDB = repo.save(department);
             System.out.println(departmentFromDB);
-            return new ResponseEntity<>(departmentFromDB.get(), HttpStatus.CREATED);
+            return departmentFromDB.get();
         }catch (Exception e) {
             System.out.println("error: Unknown Exception");
             throw e;
         }
     }
 
-    public ResponseEntity<Department> updateDepartment(Department department) {
+    public Department updateDepartment(Department department) {
         try{
             Optional<Department> updatedDepartment = repo.save(department);
-            return new ResponseEntity<>(updatedDepartment.get(), HttpStatus.CREATED);
+            return updatedDepartment.get();
         }catch (Exception e) {
             System.out.println("error: Unknown Exception");
             throw e;
         }
     }
 
-    public ResponseEntity<String> deleteDepartment(int id) {
+    public String deleteDepartment(int id) {
         try{
             Optional<Department> department = repo.findById(id);
             if(department.isPresent()){
                 repo.remove(id);
-                return new ResponseEntity<>("Department deleted", HttpStatus.OK);
+                return "Department deleted";
             }else{
                 throw new DepartmentNotFoundException(id);
             }

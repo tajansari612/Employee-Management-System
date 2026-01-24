@@ -4,8 +4,6 @@ import com.tajwebapp.exception.EmployeeNotFoundException;
 import com.tajwebapp.model.Employee;
 import com.tajwebapp.repo.EmployeeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,22 +16,22 @@ public class EmployeeService {
     @Autowired
     EmployeeRepo repo;
 
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         try {
             employees = repo.findAll();
-            return new ResponseEntity<>(employees, HttpStatus.OK);
+            return employees;
         } catch (Exception e) {
             System.out.println("error: Unknown Exception");
             throw e;
         }
     }
 
-    public ResponseEntity<Employee> getEmployeeById(int id) {
+    public Employee getEmployeeById(int id) {
         try {
             Optional<Employee> employee = repo.findById(id);
             if(employee.isPresent()){
-                return new ResponseEntity<>(employee.get(), HttpStatus.OK);
+                return employee.get();
             }else{
                 throw new EmployeeNotFoundException(id);
             }
@@ -46,41 +44,32 @@ public class EmployeeService {
         }
     }
 
-    public ResponseEntity<Employee> addEmployee(Employee employee) {
+    public Employee addEmployee(Employee employee) {
         try {
             Optional<Employee> employeeFromDB = repo.save(employee);
-            return new ResponseEntity<>(
-                    employeeFromDB.get(),
-                    HttpStatus.CREATED
-            );
+            return employeeFromDB.get();
         } catch (Exception e) {
             System.out.println("error: Unknown Exception");
             throw e;
         }
     }
 
-    public ResponseEntity<Employee> updateEmployee(Employee employee) {
+    public Employee updateEmployee(Employee employee) {
         try {
             Optional<Employee> updatedEmployee = repo.save(employee);
-            return new ResponseEntity<>(
-                    updatedEmployee.get(),
-                    HttpStatus.CREATED
-            );
+            return updatedEmployee.get();
         } catch (Exception e) {
             System.out.println("error: Unknown Exception");
             throw e;
         }
     }
 
-    public ResponseEntity<String> deleteEmployee(int id) {
+    public String deleteEmployee(int id) {
         try{
             Optional<Employee> employee = repo.findById(id);
             if(employee.isPresent()){
                 repo.remove(id);
-                return new ResponseEntity<>(
-                        "Employee Deleted",
-                        HttpStatus.OK
-                );
+                return "Employee Deleted";
             }else{
                 throw new EmployeeNotFoundException(id);
             }
