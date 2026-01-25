@@ -31,14 +31,16 @@ Employee-Management-System is a Java web application that provides RESTful endpo
 ## API
 1. Employee Service
 - `GET /employee/getAll` — list all employees  
-- `GET /employee/get/{id}` — get employee by id  
+- `GET /employee/get/id/{id}` — get employee by id
+- `GET /employee/get/email/{email}` — get employee by email
 - `POST /employee/add` — create employee (JSON body)  
 - `PUT /employee/update` — update employee (JSON body)  
 - `DELETE /employee/delete/{id}` — delete employee
 
 2. Department Service
 - `GET /department/getAll` — list all departments  
-- `GET /department/get/{id}` — get department by id  
+- `GET /department/get/id/{id}` — get department by id
+- `GET /department/get/name/{id}` — get department by name
 - `POST /department/add` — create department (JSON body)  
 - `PUT /department/update` — update department (JSON body)  
 - `DELETE /department/delete/{id}` — delete department
