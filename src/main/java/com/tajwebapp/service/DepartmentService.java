@@ -1,10 +1,10 @@
 package com.tajwebapp.service;
 
+import com.tajwebapp.exception.DepartmentAlreadyExistsException;
+import com.tajwebapp.exception.DepartmentNotFoundException;
 import com.tajwebapp.model.Department;
 import com.tajwebapp.repo.DepartmentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,63 +15,99 @@ public class DepartmentService {
     @Autowired
     DepartmentRepo repo;
 
-    public ResponseEntity<List<Department>> getAllDepartments() {
+    public List<Department> getAllDepartments() {
         try{
-            List<Department> departments = repo.findAll();
-            return new ResponseEntity<>(departments, HttpStatus.OK);
+            return repo.findAll();
         }catch (Exception e) {
+            System.out.println("api: getAllDepartments :Internal server error :" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<Department> getDepartmentById(int id) {
+    public Department getDepartmentById(int id) {
         try{
             Optional<Department> department = repo.findById(id);
             if(department.isPresent()){
-                return new ResponseEntity<>(department.get(), HttpStatus.OK);
+                return department.get();
             }else{
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                throw new DepartmentNotFoundException(id);
             }
-        }catch (Exception e) {
+        }catch (DepartmentNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            System.out.println("api: getDepartmentById :Internal server error :" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<Department> addDepartment(Department department) {
+    public Department getDepartmentByName(String name) {
         try{
-            Optional<Department> departmentFromDB = repo.save(department);
-            System.out.println(departmentFromDB);
-            return new ResponseEntity<>(departmentFromDB.get(), HttpStatus.CREATED);
-        }catch (Exception e) {
+            Optional<Department> department = repo.findByName(name);
+            if(department.isPresent()){
+                return department.get();
+            }
+            throw new DepartmentNotFoundException(name);
+        } catch (DepartmentNotFoundException ex) {
+            System.out.println("error: " + ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            System.out.println("api: getDepartmentByName :Internal server error :" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<Department> updateDepartment(Department department) {
+    public Department addDepartment(Department department) {
         try{
-            Optional<Department> updatedDepartment = repo.save(department);
-            return new ResponseEntity<>(updatedDepartment.get(), HttpStatus.CREATED);
+            if(repo.findByName(department.getName()).isPresent()){
+                throw new DepartmentAlreadyExistsException(department.getName());
+            }
+            return repo.save(department).get();
+        } catch (DepartmentAlreadyExistsException ex) {
+            System.out.println("error: " + ex.getMessage());
+            throw ex;
         }catch (Exception e) {
+            System.out.println("api: addDepartment :Internal server error :" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<String> deleteDepartment(int id) {
+    public Department updateDepartment(Department department) {
+        try{
+            if(repo.findById(department.getId()).isPresent()){
+                return repo.save(department).get();
+            }
+            throw new DepartmentNotFoundException(department.getId());
+        } catch (DepartmentNotFoundException ex) {
+            System.out.println("error: " + ex.getMessage());
+            throw ex;
+        }catch (Exception e) {
+            System.out.println("api: updateDepartment :Internal server error :" + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public String deleteDepartment(int id) {
         try{
             Optional<Department> department = repo.findById(id);
             if(department.isPresent()){
                 repo.remove(id);
-                return new ResponseEntity<>("Department deleted", HttpStatus.OK);
+                return "Department deleted";
             }else{
-                return new ResponseEntity<>("Invalid department id", HttpStatus.BAD_REQUEST);
+                throw new DepartmentNotFoundException(id);
             }
+        } catch (DepartmentNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
         } catch (Exception e) {
+            System.out.println("api: deleteDepartment :Internal server error :" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

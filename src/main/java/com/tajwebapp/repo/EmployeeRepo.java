@@ -37,6 +37,12 @@ public class EmployeeRepo {
         return Optional.ofNullable(session.find(Employee.class, id));
     }
 
+    public Optional<Employee> findByEmail(String email) {
+        Query query = session.createQuery("FROM Employee WHERE email = :email");
+        query.setParameter("email",email);
+        return Optional.ofNullable((Employee) query.uniqueResult());
+    }
+
     public void remove(int id) {
         Transaction transaction = session.beginTransaction();
         Employee employee = session.find(Employee.class, id);

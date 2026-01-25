@@ -3,6 +3,7 @@ package com.tajwebapp.controller;
 import com.tajwebapp.model.Department;
 import com.tajwebapp.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,26 +24,49 @@ public class DepartmentController {
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Department>> getAllDepartments(){
-        return departmentService.getAllDepartments();
+        return new ResponseEntity<>(
+                departmentService.getAllDepartments(),
+                HttpStatus.OK
+        );
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/id/{id}")
     public ResponseEntity<Department> getDepartmentById(@PathVariable("id") int id){
-        return departmentService.getDepartmentById(id);
+        return new ResponseEntity<>(
+                departmentService.getDepartmentById(id),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/get/name/{name}")
+    public ResponseEntity<Department> getByName(@PathVariable("name") String name){
+        return new ResponseEntity<>(
+                departmentService.getDepartmentByName(name),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/add")
     public ResponseEntity<Department> addDepartment(@RequestBody Department department){
-        return departmentService.addDepartment(department);
+        return new ResponseEntity<>(
+                departmentService.addDepartment(department),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("/update")
     public ResponseEntity<Department> updateDepartment(@RequestBody Department department){
-        return departmentService.updateDepartment(department);
+        return new ResponseEntity<>(
+                departmentService.updateDepartment(department),
+                HttpStatus.CREATED
+        );
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteDepartment(@PathVariable("id") int id){
-        return departmentService.deleteDepartment(id);
+        return new ResponseEntity<>(
+                departmentService.deleteDepartment(id),
+                HttpStatus.OK
+        );
     }
 }

@@ -1,10 +1,10 @@
 package com.tajwebapp.service;
 
+import com.tajwebapp.exception.EmployeeAlreadyExistsException;
+import com.tajwebapp.exception.EmployeeNotFoundException;
 import com.tajwebapp.model.Employee;
 import com.tajwebapp.repo.EmployeeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,74 +17,102 @@ public class EmployeeService {
     @Autowired
     EmployeeRepo repo;
 
-    public ResponseEntity<Employee> addEmployee(Employee employee) {
+    public List<Employee> getAllEmployees() {
+        List<Employee> employees = new ArrayList<>();
         try {
-            Optional<Employee> employeeFromDB = repo.save(employee);
-            return new ResponseEntity<>(
-                    employeeFromDB.get(),
-                    HttpStatus.CREATED
-            );
+            employees = repo.findAll();
+            return employees;
         } catch (Exception e) {
+            System.out.println("api: getAllEmployees :Internal server error :" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<Employee> updateEmployee(Employee employee) {
+    public Employee getEmployeeById(int id) {
         try {
-            Optional<Employee> updatedEmployee = repo.save(employee);
-            return new ResponseEntity<>(
-                    updatedEmployee.get(),
-                    HttpStatus.CREATED
-            );
+            Optional<Employee> employee = repo.findById(id);
+            if(employee.isPresent()){
+                return employee.get();
+            }
+            throw new EmployeeNotFoundException(id);
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("api: getEmployeeById :Internal server error :" + e.getMessage());
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public ResponseEntity<String> deleteEmployee(int id) {
+    public Employee getEmployeeByEmail(String email) {
+        try {
+            Optional<Employee> employee = repo.findByEmail(email);
+            if(employee.isPresent()){
+                return employee.get();
+            }
+            throw new EmployeeNotFoundException(email);
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("api: getEmployeeByEmail :Internal server error :" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public Employee addEmployee(Employee employee) {
+        try {
+            if(repo.findByEmail(employee.getEmail()).isPresent()){
+                System.out.println(repo.findByEmail(employee.getEmail()));
+                throw new EmployeeAlreadyExistsException(employee.getEmail());
+            }
+            return repo.save(employee).get();
+        } catch (EmployeeAlreadyExistsException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw new EmployeeAlreadyExistsException(employee.getEmail());
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("api: addEmployee :Internal server error :" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public Employee updateEmployee(Employee employee) {
+        try {
+            if(repo.findById(employee.getId()).isPresent()){
+                Optional<Employee> updatedEmployee = repo.save(employee);
+                return updatedEmployee.get();
+            }
+            throw new EmployeeNotFoundException(employee.getId());
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw new EmployeeNotFoundException(employee.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("api: updateEmployee :Internal server error :" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public String deleteEmployee(int id) {
         try{
             Optional<Employee> employee = repo.findById(id);
             if(employee.isPresent()){
                 repo.remove(id);
-                return new ResponseEntity<>(
-                        "Employee Deleted",
-                        HttpStatus.OK
-                );
+                return "Employee Deleted";
             }else{
-                return new ResponseEntity<>(
-                        "Invalid id",
-                        HttpStatus.BAD_REQUEST
-                );
+                throw new EmployeeNotFoundException(id);
             }
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
         } catch (Exception e) {
+            System.out.println("api: deleteEmployee :Internal server error :" + e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = new ArrayList<>();
-        try {
-            employees = repo.findAll();
-            return new ResponseEntity<>(employees, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    public ResponseEntity<Employee> getEmployeeById(int id) {
-        try {
-            Optional<Employee> employee = repo.findById(id);
-            if(employee.isPresent()){
-                return new ResponseEntity<>(employee.get(), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
