@@ -1,4 +1,4 @@
-# Employee-Management-System V1.1.1
+# Employee-Management-System V1.2.0
 
 Simple CRUD web application to manage employees.
 No frontend is implemented use postman or any other tool for testing.
