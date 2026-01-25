@@ -5,7 +5,6 @@ import com.tajwebapp.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,10 +31,18 @@ public class EmployeeController {
         );
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/id/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable("id") int id){
         return new ResponseEntity<>(
                 employeeService.getEmployeeById(id),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/get/email/{email}")
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable("email") String email){
+        return new ResponseEntity<>(
+                employeeService.getEmployeeByEmail(email),
                 HttpStatus.OK
         );
     }

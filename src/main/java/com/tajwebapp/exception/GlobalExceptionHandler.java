@@ -18,6 +18,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(EmployeeAlreadyExistsException.class)
+    public ResponseEntity<String> handleEmployeeAlreadyExists(EmployeeAlreadyExistsException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DepartmentAlreadyExistsException.class)
+    public ResponseEntity<String> handleDepartmentAlreadyExists(DepartmentAlreadyExistsException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleAll(Exception ex) {
         // log the exception (not shown)

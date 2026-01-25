@@ -1,5 +1,6 @@
 package com.tajwebapp.service;
 
+import com.tajwebapp.exception.DepartmentAlreadyExistsException;
 import com.tajwebapp.exception.DepartmentNotFoundException;
 import com.tajwebapp.model.Department;
 import com.tajwebapp.repo.DepartmentRepo;
@@ -18,7 +19,8 @@ public class DepartmentService {
         try{
             return repo.findAll();
         }catch (Exception e) {
-            System.out.println("error: Unknown Exception");
+            System.out.println("api: getAllDepartments :Internal server error :" + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }
@@ -35,28 +37,57 @@ public class DepartmentService {
             System.out.println("error: "+ ex.getMessage());
             throw ex;
         } catch (Exception e) {
-            System.out.println("error: Unknow Exception :" + e.getMessage());
+            System.out.println("api: getDepartmentById :Internal server error :" + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public Department getDepartmentByName(String name) {
+        try{
+            Optional<Department> department = repo.findByName(name);
+            if(department.isPresent()){
+                return department.get();
+            }
+            throw new DepartmentNotFoundException(name);
+        } catch (DepartmentNotFoundException ex) {
+            System.out.println("error: " + ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            System.out.println("api: getDepartmentByName :Internal server error :" + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }
 
     public Department addDepartment(Department department) {
         try{
-            Optional<Department> departmentFromDB = repo.save(department);
-            System.out.println(departmentFromDB);
-            return departmentFromDB.get();
+            if(repo.findByName(department.getName()).isPresent()){
+                throw new DepartmentAlreadyExistsException(department.getName());
+            }
+            return repo.save(department).get();
+        } catch (DepartmentAlreadyExistsException ex) {
+            System.out.println("error: " + ex.getMessage());
+            throw ex;
         }catch (Exception e) {
-            System.out.println("error: Unknown Exception");
+            System.out.println("api: addDepartment :Internal server error :" + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }
 
     public Department updateDepartment(Department department) {
         try{
-            Optional<Department> updatedDepartment = repo.save(department);
-            return updatedDepartment.get();
+            if(repo.findById(department.getId()).isPresent()){
+                return repo.save(department).get();
+            }
+            throw new DepartmentNotFoundException(department.getId());
+        } catch (DepartmentNotFoundException ex) {
+            System.out.println("error: " + ex.getMessage());
+            throw ex;
         }catch (Exception e) {
-            System.out.println("error: Unknown Exception");
+            System.out.println("api: updateDepartment :Internal server error :" + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }
@@ -74,7 +105,8 @@ public class DepartmentService {
             System.out.println("error: "+ ex.getMessage());
             throw ex;
         } catch (Exception e) {
-            System.out.println("error: Unknown Exception" + e.getMessage());
+            System.out.println("api: deleteDepartment :Internal server error :" + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }

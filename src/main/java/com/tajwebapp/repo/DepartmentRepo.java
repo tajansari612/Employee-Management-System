@@ -29,6 +29,12 @@ public class DepartmentRepo {
         return Optional.ofNullable(session.find(Department.class, id));
     }
 
+    public Optional<Department> findByName(String name) {
+        Query query = session.createQuery("FROM Department WHERE name = :name");
+        query.setParameter("name", name);
+        return Optional.ofNullable((Department) query.uniqueResult());
+    }
+
     public Optional<Department> save(Department department) {
         Transaction transaction = session.beginTransaction();
         Optional<Department> departmentFromDB = Optional.ofNullable(session.merge(department));

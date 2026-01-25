@@ -1,5 +1,6 @@
 package com.tajwebapp.service;
 
+import com.tajwebapp.exception.EmployeeAlreadyExistsException;
 import com.tajwebapp.exception.EmployeeNotFoundException;
 import com.tajwebapp.model.Employee;
 import com.tajwebapp.repo.EmployeeRepo;
@@ -22,7 +23,8 @@ public class EmployeeService {
             employees = repo.findAll();
             return employees;
         } catch (Exception e) {
-            System.out.println("error: Unknown Exception");
+            System.out.println("api: getAllEmployees :Internal server error :" + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }
@@ -32,34 +34,65 @@ public class EmployeeService {
             Optional<Employee> employee = repo.findById(id);
             if(employee.isPresent()){
                 return employee.get();
-            }else{
-                throw new EmployeeNotFoundException(id);
             }
+            throw new EmployeeNotFoundException(id);
         } catch (EmployeeNotFoundException ex) {
             System.out.println("error: "+ ex.getMessage());
             throw ex;
         } catch (Exception e) {
-            System.out.println("error: Unknow Exception");
+            e.printStackTrace();
+            System.out.println("api: getEmployeeById :Internal server error :" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public Employee getEmployeeByEmail(String email) {
+        try {
+            Optional<Employee> employee = repo.findByEmail(email);
+            if(employee.isPresent()){
+                return employee.get();
+            }
+            throw new EmployeeNotFoundException(email);
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw ex;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("api: getEmployeeByEmail :Internal server error :" + e.getMessage());
             throw e;
         }
     }
 
     public Employee addEmployee(Employee employee) {
         try {
-            Optional<Employee> employeeFromDB = repo.save(employee);
-            return employeeFromDB.get();
-        } catch (Exception e) {
-            System.out.println("error: Unknown Exception");
+            if(repo.findByEmail(employee.getEmail()).isPresent()){
+                System.out.println(repo.findByEmail(employee.getEmail()));
+                throw new EmployeeAlreadyExistsException(employee.getEmail());
+            }
+            return repo.save(employee).get();
+        } catch (EmployeeAlreadyExistsException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw new EmployeeAlreadyExistsException(employee.getEmail());
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("api: addEmployee :Internal server error :" + e.getMessage());
             throw e;
         }
     }
 
     public Employee updateEmployee(Employee employee) {
         try {
-            Optional<Employee> updatedEmployee = repo.save(employee);
-            return updatedEmployee.get();
+            if(repo.findById(employee.getId()).isPresent()){
+                Optional<Employee> updatedEmployee = repo.save(employee);
+                return updatedEmployee.get();
+            }
+            throw new EmployeeNotFoundException(employee.getId());
+        } catch (EmployeeNotFoundException ex) {
+            System.out.println("error: "+ ex.getMessage());
+            throw new EmployeeNotFoundException(employee.getId());
         } catch (Exception e) {
-            System.out.println("error: Unknown Exception");
+            e.printStackTrace();
+            System.out.println("api: updateEmployee :Internal server error :" + e.getMessage());
             throw e;
         }
     }
@@ -77,7 +110,8 @@ public class EmployeeService {
             System.out.println("error: "+ ex.getMessage());
             throw ex;
         } catch (Exception e) {
-            System.out.println("error: Unknown Exception");
+            System.out.println("api: deleteEmployee :Internal server error :" + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }
