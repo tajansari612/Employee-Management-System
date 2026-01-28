@@ -23,7 +23,7 @@ public class DepartmentController {
     DepartmentService departmentService;
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Department>> getAllDepartments(){
+    public ResponseEntity<List<Department>> getAllDepartments() throws Exception {
         return new ResponseEntity<>(
                 departmentService.getAllDepartments(),
                 HttpStatus.OK
