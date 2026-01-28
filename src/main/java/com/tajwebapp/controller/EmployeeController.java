@@ -24,7 +24,7 @@ public class EmployeeController {
     EmployeeService employeeService;
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Employee>> getAllEmployees(){
+    public ResponseEntity<List<Employee>> getAllEmployees() throws Exception {
         return new ResponseEntity<>(
                 employeeService.getAllEmployees(),
                 HttpStatus.OK
