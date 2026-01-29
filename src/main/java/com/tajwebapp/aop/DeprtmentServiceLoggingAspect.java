@@ -1,11 +1,8 @@
 package com.tajwebapp.aop;
 
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,23 +18,23 @@ public class DeprtmentServiceLoggingAspect {
     @Pointcut("execution(* com.tajwebapp.service.DepartmentService.*(..))")
     public void departmentServiceMethods(){}
 
-    @Before("departmentServiceMethods()")
-    public void logBefore(JoinPoint jp){
-        LOGGER.info("Method Called: " + jp.getSignature().getName());
+    @Around("departmentServiceMethods()")
+    public Object logAround(ProceedingJoinPoint pjp) throws Throwable {
+        long start = System.currentTimeMillis();
+        String signature = pjp.getSignature().toShortString();
+        Object[] args = pjp.getArgs();
+
+        LOGGER.info("Entering {} with args={}", signature, args);
+        try {
+            Object result = pjp.proceed();
+            long time = System.currentTimeMillis() - start;
+            LOGGER.info("Exiting {} returned={} in {} ms", signature, result, time);
+            return result;
+        } catch (Throwable ex) {
+            long time = System.currentTimeMillis() - start;
+            LOGGER.error("Exception in {} after {} ms: {}", signature, time, ex.toString(), ex);
+            throw ex;
+        }
     }
 
-    @After("deparmentServiceMethods()")
-    public void logAfter(JoinPoint jp){
-        LOGGER.info("Method executed: " + jp.getSignature().getName());
-    }
-
-    @AfterThrowing("departmentServiceMethods()")
-    public void logAfterThrowing(JoinPoint jp){
-        LOGGER.info("Method has some issue: " + jp.getSignature().getName());
-    }
-
-    @AfterReturning("departmentServiceMethods()")
-    public void logAfterReturning(JoinPoint jp){
-        LOGGER.info("Method executed successfully: " + jp.getSignature().getName());
-    }
 }

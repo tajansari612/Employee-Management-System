@@ -1,11 +1,8 @@
 package com.tajwebapp.aop;
 
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,23 +18,22 @@ public class EmployeeServiceLoggingAspect {
     @Pointcut("execution(public * com.tajwebapp.service.EmployeeService.*(..))")
     public void employeeServiceMethods(){}
 
-    @Before("employeeServiceMethods()")
-    public void logBefore(JoinPoint jp){
-        LOGGER.info("Mehtod Called "+jp.getSignature().getName());
-    }
+    @Around("employeeServiceMethods()")
+    public Object logAround(ProceedingJoinPoint pjp) throws Throwable {
+        long start = System.currentTimeMillis();
+        String signature = pjp.getSignature().toShortString();
+        Object[] args = pjp.getArgs();
 
-    @After("employeeServiceMethods()")
-    public void logAfter(JoinPoint jp){
-        LOGGER.info("Mehtod Executed "+jp.getSignature().getName());
-    }
-
-    @AfterThrowing("employeeServiceMethods()")
-    public void logMethodCrash(JoinPoint jp){
-        LOGGER.info("Mehtod has some issue "+jp.getSignature().getName());
-    }
-
-    @AfterReturning("employeeServiceMethods()")
-    public void logMethodExecutedSuccessfully(JoinPoint jp){
-        LOGGER.info("Mehtod executed successfully "+jp.getSignature().getName());
+        LOGGER.info("Entering {} with args={}", signature, args);
+        try {
+            Object result = pjp.proceed();
+            long time = System.currentTimeMillis() - start;
+            LOGGER.info("Exiting {} returned={} in {} ms", signature, result, time);
+            return result;
+        } catch (Throwable ex) {
+            long time = System.currentTimeMillis() - start;
+            LOGGER.error("Exception in {} after {} ms: {}", signature, time, ex.toString(), ex);
+            throw ex;
+        }
     }
 }
